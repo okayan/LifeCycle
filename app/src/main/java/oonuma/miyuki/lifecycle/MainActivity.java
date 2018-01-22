@@ -1,6 +1,5 @@
 package oonuma.miyuki.lifecycle;
 
-import android.arch.lifecycle.GenericLifecycleObserver;
 import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.LifecycleOwner;
@@ -13,9 +12,10 @@ import android.util.Log;
 /**
  *
  */
-public class MainActivity extends AppCompatActivity implements GenericLifecycleObserver{
+public class MainActivity extends AppCompatActivity {
 
 
+    // 課題２
     final LifecycleObserver lifecycleObserver = new LifecycleObserver() {
         @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
         public void createSome(LifecycleOwner owner) {
@@ -39,18 +39,16 @@ public class MainActivity extends AppCompatActivity implements GenericLifecycleO
         }
         @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
         public void resumeSome(LifecycleOwner owner) {
-            Log.d(getPackageName(), "on_CREATE " +getLifecycle().getCurrentState().name());
+            Log.d(getPackageName(), "ON_RESUME " +getLifecycle().getCurrentState().name());
+        }
+
+        @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+        public void destroySome(LifecycleOwner owner) {
+            Log.d(getPackageName(), "ON_DESTROY " +getLifecycle().getCurrentState().name());
+            // 課題2の2
             owner.getLifecycle().removeObserver(lifecycleObserver);
         }
 
-
-    };
-
-    final LifecycleObserver genericOb = new GenericLifecycleObserver() {
-        @Override
-        public void onStateChanged(LifecycleOwner source, Lifecycle.Event event) {
-            Log.d(getPackageName(), "LifecycleObserver onStateChanged " +getLifecycle().getCurrentState().name());
-        }
     };
 
     @Override
@@ -58,24 +56,25 @@ public class MainActivity extends AppCompatActivity implements GenericLifecycleO
         super.onCreate(savedInstanceState);
         Log.d(getPackageName(), "onCreate " + getLifecycle().getCurrentState().name());
         getLifecycle().addObserver(lifecycleObserver);
-        getLifecycle().addObserver(genericOb);
+        getLifecycle().addObserver(lifecycleObserver);
+        getLifecycle().addObserver(lifecycleObserver);
+
         Log.d(getPackageName(), "onCreate lifecycleObserver 2");
 
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        Log.d(getPackageName(), "onSave before " + getLifecycle().getCurrentState().name());
-
+        Log.d(getPackageName(), "onSaveInstanceState before " + getLifecycle().getCurrentState().name());
         super.onSaveInstanceState(outState);
-        Log.d(getPackageName(), "onSave after " + getLifecycle().getCurrentState().name());
+        Log.d(getPackageName(), "onSaveInstanceState after " + getLifecycle().getCurrentState().name());
 
     }
 
     @Override
     protected void onStart() {
         super.onStart();///INITIALIZED
-        Log.d(getPackageName(), "ONSTART " + getLifecycle().getCurrentState().name());
+        Log.d(getPackageName(), "onStart " + getLifecycle().getCurrentState().name());
 
     }
 
@@ -96,12 +95,9 @@ public class MainActivity extends AppCompatActivity implements GenericLifecycleO
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d(getPackageName(), "onD" + getLifecycle().getCurrentState().name());
-
+        Log.d(getPackageName(), "onDestroy " + getLifecycle().getCurrentState().name());
+        // 課題2の2
+        getLifecycle().removeObserver(lifecycleObserver);
     }
 
-    @Override
-    public void onStateChanged(LifecycleOwner source, Lifecycle.Event event) {
-
-    }
 }
